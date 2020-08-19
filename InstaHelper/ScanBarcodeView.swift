@@ -13,6 +13,7 @@ import EANBarcodeGenerator
 struct ScanBarcodeView: View {
     @State private var isShowingScanner = false
     @State private var barcodeValue = "0000000000000"
+    @State private var itemName = ""
     
     
     let context = CIContext()
@@ -20,9 +21,9 @@ struct ScanBarcodeView: View {
     
     func generateQRData(str: String) -> Data {
          let filter = CIFilter(name: "CIEANBarcodeGenerator")
-         let data = str.data(using: .ascii, allowLossyConversion: false)
-         filter?.setValue("5901234123457", forKey: "inputMessage")
+         filter?.setValue(str, forKey: "inputMessage")
          let transform = CGAffineTransform(scaleX: 5, y: 5)
+        print(str)
 
 
          let image = filter?.outputImage?.transformed(by: transform)
@@ -38,6 +39,23 @@ struct ScanBarcodeView: View {
             .aspectRatio(contentMode: .fit)
             .padding()
             Text(barcodeValue)
+            VStack(alignment: .leading) {
+                Text("Item Name")
+                    .font(.headline)
+                TextField("Bananas, Milk, etc.", text: $itemName)               .textFieldStyle(RoundedBorderTextFieldStyle())
+            }
+            .padding()
+            Button(action: {
+                print("Hello World")
+            }) {
+                Text("Add To List")
+            }
+            .font(.title)
+            .padding(12)
+            .background(Color.green)
+            .accentColor(.white)
+            .cornerRadius(12)
+            .offset(x: 0, y: -12)
             Spacer()
             Button(action: {
                 self.isShowingScanner = true;
@@ -45,14 +63,14 @@ struct ScanBarcodeView: View {
                 Text("Scan Barcode")
                     .font(.largeTitle)
                     .padding(12)
-                    .background(Color.green)
+                    .background(Color.gray)
                     .accentColor(.white)
                     .cornerRadius(12)
                     .offset(x: 0, y: -12)
             }
         }
         .sheet(isPresented: $isShowingScanner) {
-            CodeScannerView(codeTypes: [.ean8, .ean13], simulatedData: "Hello\nWorld", completion: self.handleScan)
+            CodeScannerView(codeTypes: [.ean8, .ean13], simulatedData: "5901234123457", completion: self.handleScan)
         }
     }
     
